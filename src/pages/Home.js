@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchMovies, fetchTVshows } from '../redux/dataReducer';
-import HorizontalScroll from '../components/carousel/HorizontalScroll';
-import CarouselSlider from '../components/carousel/CarouselSlider';
+import { fetchMovies, fetchTVshows } from '../redux/reducers/dataReducer';
+import HorizontalScroll from '../carousel/HorizontalScroll';
+import CarouselSlider from '../carousel/CarouselSlider';
 
 const Home = () => {
   const dispatch = useDispatch();

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 
-import SeasonCard from '../components/cards/SeasonCard';
+import SeasonCard from '../cards/SeasonCard';
 import RatingCircle from '../components/RatingCircle';
 
 const ShowDetails = () => {

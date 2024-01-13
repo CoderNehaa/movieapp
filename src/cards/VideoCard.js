@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { setVideoURL } from '../redux/dataReducer';
+import { setVideoURL } from '../redux/reducers/dataReducer';
 
 const VideoCard = ({video}) => {
   const dispatch = useDispatch();

@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
-import RatingCircle from '../RatingCircle';
-import { setVideoURL } from '../../redux/dataReducer';
+import RatingCircle from '../components/RatingCircle';
+import { setVideoURL } from '../redux/reducers/dataReducer';
 
 const CarouselSlider = () => {
     const movies = useSelector((state) => state.dataReducer.movies);

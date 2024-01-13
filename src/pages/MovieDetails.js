@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
-import HorizontalScroll from '../components/carousel/HorizontalScroll';
+import HorizontalScroll from '../carousel/HorizontalScroll';
 import VideoCard from '../cards/VideoCard';
-import { setVideoURL } from '../redux/dataReducer';
+import { setVideoURL } from '../redux/reducers/dataReducer';
 import RatingCircle from '../components/RatingCircle';
 
 const MovieDetails = () => {
@@ -60,6 +60,7 @@ const MovieDetails = () => {
                         <span> Revenue :<span className='text-gray-400'> ${movie && movie.revenue}</span> </span>
                         <span> Duration :<span className='text-gray-400'>  {movie && movie.runtime} min </span> </span>
                     </div>
+                    
                     <div className='flex justify-evenly m-2 border-b-2 border-gray-500 p-2 text-base'>
                         <span> Status : <span className='text-gray-400'> {movie && movie.status}</span> </span>
                         <span> Release Date : <span className='text-gray-400'> {movie && movie.release_date} </span></span>
