@@ -3,19 +3,22 @@ import { useParams } from 'react-router-dom';
 
 import SeasonCard from '../cards/SeasonCard';
 import RatingCircle from '../components/RatingCircle';
+import { useDispatch, useSelector } from 'react-redux';
+import { dataSelector, fetchCurrent} from "../redux/reducers/dataReducer";
 
 const ShowDetails = () => {
     const id = useParams();
-    const [ show, setShow ] = useState(null);
+    const show = useSelector(dataSelector).currentShow
     const [showNextEpisode, setShowNextEpisode ] = useState(false);
+    const {baseUrl, apiKey} = useSelector(dataSelector).apiData;
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        fetch(`https://api.themoviedb.org/3/tv/${id.id}?api_key=a85f0e9195796914174fd0bde91a48bc&append_to_response=videos`)
-        .then(res => res.json())
-        .then(data => data?setShow(data):null)
-        .catch(err => console.log("Error while fetching the selected show details.", err))
+        dispatch(fetchCurrent({
+            url:`${baseUrl}tv/${id.id}?api_key=${apiKey}&append_to_response=videos`
+        }))
     }, [])
-    
+
     const backgroundImageStyle = {
         backgroundImage: `url(https://image.tmdb.org/t/p/original${show ? show.backdrop_path : ''})`,
         backgroundSize: 'cover',

@@ -7,10 +7,10 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 import RatingCircle from '../components/RatingCircle';
-import { setVideoURL } from '../redux/reducers/dataReducer';
+import { dataSelector, setVideoURL } from '../redux/reducers/dataReducer';
 
 const CarouselSlider = () => {
-    const movies = useSelector((state) => state.dataReducer.movies);
+    const movies = useSelector(dataSelector).movies;
     const [videoId, setVideoId] = useState(0);
     const dispatch = useDispatch();
 

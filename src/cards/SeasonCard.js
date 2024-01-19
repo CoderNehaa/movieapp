@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 const SeasonCard = ({series, obj}) => {
   const date = new Date(obj && obj.air_date);

@@ -11,11 +11,13 @@ body{
     .CircularProgressbar-text {
         font-size: 30px;
         fill: aliceblue;
+        /* fill: black; */
         font-weight: bold
     }
-} 
+}
+ 
 /* In your styles.css or App.css */
-@keyframes scroll {
+/* @keyframes scroll {
     0% {
       transform: translateX(100%);
     }
@@ -27,4 +29,5 @@ body{
   .animate-scroll {
     animation: scroll 10s linear infinite;
   }
-  
+   */
+   
