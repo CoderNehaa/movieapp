@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // React Responsive Carousel
 import { Carousel } from 'react-responsive-carousel';
@@ -8,11 +8,26 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 import RatingCircle from '../components/RatingCircle';
 import { dataSelector, setVideoURL } from '../redux/reducers/dataReducer';
+import { addToFavorites, getFavorites, userSelector } from '../redux/reducers/userReducer';
 
 const CarouselSlider = () => {
-    const movies = useSelector(dataSelector).movies;
+    const {user} = useSelector(userSelector);
+    const {movies} = useSelector(dataSelector);
     const [videoId, setVideoId] = useState(0);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        dispatch(getFavorites());
+    }, []);
+
+    function handleClick(item){
+        if(user){
+            dispatch(addToFavorites(item));
+        } else {
+            navigate('/signin');
+        }
+    }
 
     useEffect(() => {
         if(videoId !== 0){
@@ -33,7 +48,7 @@ const CarouselSlider = () => {
 
     return (
         <div>
-            <Carousel showArrows={true} showThumbs={false} showStatus={false}>
+            <Carousel showArrows={true} autoPlay={true} showThumbs={false} showStatus={false} showIndicators={false}>
                 {movies && movies.map((obj, index) =>
                     <div key={index}> 
                         <div className='absolute h-full w-[800px]
@@ -49,7 +64,7 @@ const CarouselSlider = () => {
                                 <RatingCircle value={obj.vote_average.toFixed(1)}/>
 
                                 <button className='h-16 w-16 bg-zinc-600 rounded-full flex justify-center items-center mr-3 ml-5 
-                                    hover:bg-white hover:text-black hover:backdrop:add'> 
+                                    hover:bg-white hover:text-black hover:backdrop:add' onClick={() => handleClick(obj)}> 
                                     <i className='fa-solid fa-heart text-2xl'></i> 
                                 </button>
 

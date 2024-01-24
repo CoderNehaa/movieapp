@@ -39,7 +39,7 @@ const TvShows = () => {
     <div className='relative top-16 bg-slate-900 text-white min-h-screen px-36 py-2'>
       <div className='flex flex-wrap justify-between items-center my-5'>
         <div className='flex items-center'>
-          <span to='/movies' className='text-gray-500 text-xl mr-3 hover:cursor-pointer' 
+          <span className='text-gray-500 text-xl mr-3 hover:cursor-pointer' 
             onClick={() => {dispatch(setTVgenre(null)); setPage(1)}}> 
             TV Shows <i className='fa-solid fa-angles-right'></i> 
           </span>
@@ -68,7 +68,7 @@ const TvShows = () => {
       </div>
 
       <div className='flex flex-wrap justify-between'>
-      { tvShows && tvShows.map((obj, index) => <Card item={obj} key={index} page='shows'/>)}
+      { tvShows && tvShows.map((obj, index) => <Card item={obj} key={index} mediaType='shows'/>)}
       </div>
     </div>
   )

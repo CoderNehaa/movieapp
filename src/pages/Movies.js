@@ -37,7 +37,8 @@ const Movies = () => {
   }
 
   return (
-    <div className='relative top-16 bg-slate-900 text-white min-h-screen px-36 py-2'>
+    <div className='relative top-16 text-white min-h-screen px-36 py-2 
+      bg-gradient-to-r from-slate-950 via-slate-900 to-cyan-900  '>
       <div className='flex flex-wrap justify-between items-center my-5'>
         <div className='flex items-center'>
           <span to='/movies' className='text-gray-500 text-xl mr-3 hover:cursor-pointer' onClick={() => {dispatch(setMovieGenre(null)); setPage(1)}}> 
@@ -68,7 +69,7 @@ const Movies = () => {
       </div>
       {loading?<div>Loading... </div>
       :<div className='flex flex-wrap justify-between'>
-      { movies && movies.map((obj, index) => <Card item={obj} key={index} page='movies'/>)}
+      { movies && movies.map((obj, index) => <Card item={obj} key={index} mediaType='movies'/>)}
       </div>}
     </div>
   )

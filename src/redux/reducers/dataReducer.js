@@ -1,27 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const INITIAL_STATE = {
+    loading:false,
+    apiData:{ baseUrl: "https://api.themoviedb.org/3/", apiKey: 'a85f0e9195796914174fd0bde91a48bc' },
     movies:[],
+    tvShows:[],
     genres:[],
-    videoURL:'',
-    apiData:{
-        baseUrl: "https://api.themoviedb.org/3/",
-        apiKey: 'a85f0e9195796914174fd0bde91a48bc'
-    },
-    sortOptions: [
-      {name:"Popularity Ascending", value:"popularity.asc"},
-      {name:"Popularity Descending", value:"popularity.desc"},
-      {name:"Revenue Ascending", value:"revenue.asc"},
-      {name:"Revenue Descending", value:"revenue.desc"},
-      {name:"Release Date Ascending", value:"primary_release_date.asc"},
-      {name:"Release Date Descending", value:"primary_release_date.desc"}
-    ],
     currentMovie:null,
     currentShow:null,
-    tvShows:[],
     movieGenre:null,
     tvGenre:null,
-    loading:false
+    searchResults:[],
+    videoURL:''
 }
 
 export const fetchList = createAsyncThunk(
@@ -40,6 +30,9 @@ export const fetchList = createAsyncThunk(
                 case 'genres':
                     thunkAPI.dispatch(setGenres(data.genres))
                     break;
+                case 'search':
+                    thunkAPI.dispatch(setSearchResults(data.results))
+                    break;
             }
         })
         .catch(err => console.log(err))
@@ -52,7 +45,9 @@ export const fetchCurrent = createAsyncThunk(
         fetch(arg.url)
         .then(res => res.json())
         .then(data => {
-            arg.type==='movie'?thunkAPI.dispatch(setCurrentMovie(data)):thunkAPI.dispatch(setCurrentShow(data))
+            arg.type==='movie'
+            ?thunkAPI.dispatch(setCurrentMovie(data))
+            :thunkAPI.dispatch(setCurrentShow(data))
         })
         .catch(err => console.log(err))
     }
@@ -61,28 +56,25 @@ export const fetchCurrent = createAsyncThunk(
 export const dataSlice = createSlice({
     name: 'data',
     initialState:INITIAL_STATE,
-    reducers:{
-        setMovies:(state, action) => {
-            state.movies = [...state.movies, ...action.payload];
-        },
+    reducers:{        
         setVideoURL:(state, action) => {
             state.videoURL = action.payload
         },
-        setGenres:(state, action) => {
-            state.genres = action.payload
-        },
-        setShows:(state, action) => {
-            state.tvShows = [...state.tvShows, ...action.payload]
+        setMovies:(state, action) => {
+            state.movies = [...state.movies, ...action.payload];
         },
         setCurrentMovie:(state, action) => {
             state.currentMovie = action.payload
         },
-        setCurrentShow:(state, action) => {
-            state.currentShow = action.payload
-        },
         setMovieGenre:(state, action) => {
             state.movieGenre = action.payload
             state.movies=[]
+        },
+        setShows:(state, action) => {
+            state.tvShows = [...state.tvShows, ...action.payload]
+        },
+        setCurrentShow:(state, action) => {
+            state.currentShow = action.payload
         }, 
         setTVgenre:(state, action) => {
             state.tvGenre = action.payload
@@ -90,11 +82,17 @@ export const dataSlice = createSlice({
         },
         setLoading:(state, action) => {
             state.loading = !state.loading
+        },
+        setGenres:(state, action) => {
+            state.genres = action.payload
+        },
+        setSearchResults:(state, action) => {
+            state.searchResults = action.payload
         }
     }
 })
 
 export const dataReducer = dataSlice.reducer;
-export const { setMovies, setVideoURL, setGenres, setShows, setCurrentMovie, setCurrentShow, setMovieGenre, setTVgenre, setLoading } = dataSlice.actions;
+export const { setMovies, setVideoURL, setGenres, setShows, setCurrentMovie, setCurrentShow, setMovieGenre, setTVgenre, setLoading, setSearchResults } = dataSlice.actions;
 export const dataSelector = (state) => state.dataReducer;
 
