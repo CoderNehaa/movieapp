@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { db, auth } from '../../firebase/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
-import { arrayUnion, doc, getDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
+import { arrayUnion, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 const initialState = {
     user:null,
@@ -10,13 +10,13 @@ const initialState = {
 
 export const signUp = createAsyncThunk(
     'user/signup',
-    (values, thunkAPI) => {
+    async (values, thunkAPI) => {
         return createUserWithEmailAndPassword(auth, values.email, values.password)
         .then(async (userCredential) => {
             updateProfile(auth.currentUser, {
                 displayName:values.name
             })
-            // Set user in app local state
+            // Set user in redux store
             const user = {
                 name:values.name,
                 email:values.email,
@@ -55,19 +55,25 @@ export const signIn = createAsyncThunk(
 
 export const signInWithGoogle = createAsyncThunk(
     'user/signinwithgoogle',
-    (arg, thunkAPI) => {
+    async (arg, thunkAPI) => {
         const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider)
-        .then((result) => {
+        .then(async (result) => {
             const credential = GoogleAuthProvider.credentialFromResult(result);
             const token = credential.accessToken;
-            // The signed-in user info.
-            const user = result.user;
-            thunkAPI.dispatch(setUser({
-                name:user.displayName,
-                email:user.email,
-                favorites:[]
-            }));
+            const userCredential = result.user;
+            
+            const docRef = doc(db, 'users', userCredential.email);
+            const docSnap = await getDoc(docRef);
+            const userFavorites = docSnap.exists() ?docSnap.data().favorites :[]
+
+            const user = {
+                name:userCredential.displayName,
+                email:userCredential.email,
+                favorites:userFavorites
+            }
+            const userRef = await setDoc(docRef, user);
+            thunkAPI.dispatch(setUser(user));
         }).catch(err => {
             console.log(err);
         })
@@ -107,6 +113,7 @@ export const getFavorites = createAsyncThunk(
     async (arg, thunkAPI) => {
         const { userReducer } = thunkAPI.getState();
         const { user } = userReducer;
+
         const docRef = doc(db, 'users', user.email);
         const docSnap = await getDoc(docRef);
 
@@ -132,6 +139,13 @@ export const addToFavorites = createAsyncThunk(
             favorites:arrayUnion(obj)
         })
         thunkAPI.dispatch(getFavorites());
+    }
+)
+
+export const removeFromFavorites = createAsyncThunk(
+    'user/removeFavorite',
+    (arg, thunkAPI) => {
+
     }
 )
 

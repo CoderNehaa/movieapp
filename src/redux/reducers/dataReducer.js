@@ -17,6 +17,7 @@ const INITIAL_STATE = {
 export const fetchList = createAsyncThunk(
     'data/fetchMovies',
     async (arg, thunkAPI) => {
+        thunkAPI.dispatch(setLoading(true));
         await fetch(arg.url)
         .then(res => res.json())
         .then(data => {
@@ -34,25 +35,60 @@ export const fetchList = createAsyncThunk(
                     thunkAPI.dispatch(setSearchResults(data.results))
                     break;
             }
+            setTimeout(() => {
+                thunkAPI.dispatch(setLoading(false));
+            }, 200);
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+            console.log(err);
+            thunkAPI.dispatch(setLoading(false));
+        });
     }
 )
 
 export const fetchCurrent = createAsyncThunk(
     'data/fetchMovie',
     async(arg, thunkAPI) => {
+        thunkAPI.dispatch(setLoading(true));
         fetch(arg.url)
         .then(res => res.json())
         .then(data => {
             arg.type==='movie'
             ?thunkAPI.dispatch(setCurrentMovie(data))
-            :thunkAPI.dispatch(setCurrentShow(data))
+            :thunkAPI.dispatch(setCurrentShow(data));
+            
+            setTimeout(() => {
+                console.log('setting loading to false');
+                thunkAPI.dispatch(setLoading(false));
+            }, 300);
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+            console.log(err);
+            thunkAPI.dispatch(setLoading(false));
+        });
     }
 )
 
+export const findTrailer = createAsyncThunk(
+    'data/trailer',
+    async (obj, thunkAPI) => {
+        await fetch(`https://api.themoviedb.org/3/${obj.type}/${obj.id}/videos?api_key=a85f0e9195796914174fd0bde91a48bc`) 
+        .then(res => res.json())
+        .then(data => {
+            if(data.results){
+                const arr = data.results.filter((video) => video.name.includes('Trailer'));
+                if (!arr.length) {
+                    window.alert('Trailer not available');
+                    throw new Error('Trailer not available'); 
+                }
+                const url = arr[0].key;
+                thunkAPI.dispatch(setVideoURL(url))
+            }
+        })
+        .catch(err => console.log(err))
+      }
+);
+  
 export const dataSlice = createSlice({
     name: 'data',
     initialState:INITIAL_STATE,
@@ -81,7 +117,7 @@ export const dataSlice = createSlice({
             state.tvShows=[]
         },
         setLoading:(state, action) => {
-            state.loading = !state.loading
+            state.loading = action.payload
         },
         setGenres:(state, action) => {
             state.genres = action.payload

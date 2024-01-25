@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import Card from '../cards/Card';
-import { dataSelector, fetchList, setTVgenre, setLoading } from '../redux/reducers/dataReducer';
+import CardSkeleton from "../loading-skeleton/CardSkeleton";
+import { dataSelector, fetchList, setTVgenre } from '../redux/reducers/dataReducer';
+import VideoPopup from '../components/VideoPopup';
 
 const TvShows = () => {
   const { tvShows, genres, apiData, tvGenre, loading } = useSelector(dataSelector);
@@ -13,17 +16,16 @@ const TvShows = () => {
   useEffect(() => { //run only when page mounted
     window.addEventListener('scroll', handleScroll);
     dispatch(fetchList({url:`${baseUrl}genre/tv/list?language=en&api_key=${apiKey}`, type:'genres'})); // Fetching genre
+    if(!tvShows.length){
+      dispatch(fetchList({url:`${baseUrl}tv/popular?api_key=${apiKey}`, type:'shows'}));
+    }
   }, [])
 
   useEffect(() => {
     if(tvGenre){
-      dispatch(setLoading(true));
-      dispatch(fetchList({type:'shows', url:`${baseUrl}discover/tv?api_key=${apiKey}&with_genres=${tvGenre.id}&page=${page}`}))
-      dispatch(setLoading(false));
-    } else {
-      dispatch(setLoading(true));
+      dispatch(fetchList({type:'shows', url:`${baseUrl}discover/tv?api_key=${apiKey}&with_genres=${tvGenre.id}&page=${page}`}));
+    } else if(!tvGenre && page > 1){
       dispatch(fetchList({url:`${baseUrl}tv/popular?api_key=${apiKey}&page=${page}`, type:'shows'}));
-      dispatch(setLoading(false));
     }
     setShowGenreBtn(false);
   }, [tvGenre, page]);
@@ -54,7 +56,7 @@ const TvShows = () => {
           </div>
 
           {/* Render list of genres */}
-          <div className={`${showGenreBtn?"block":"hidden"} bg-slate-800 px-2 absolute w-full`}>
+          <div className={`${showGenreBtn?"block":"hidden"} bg-slate-800 px-2 absolute z-10 w-full`}>
             {genres && genres.map((genre, index) => {
               return(
                 <div className='flex justify-center hover:bg-sky-300 hover:cursor-pointer m-1 text-sm' key={index} 
@@ -62,14 +64,15 @@ const TvShows = () => {
               )
             })}
           </div>
-            
         </div>
 
       </div>
 
       <div className='flex flex-wrap justify-between'>
+      {loading && <CardSkeleton count={page*20}/>}
       { tvShows && tvShows.map((obj, index) => <Card item={obj} key={index} mediaType='shows'/>)}
       </div>
+      <VideoPopup />
     </div>
   )
 }

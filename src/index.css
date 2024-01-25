@@ -8,26 +8,29 @@ body{
 }
 
 #circleRating{
-    .CircularProgressbar-text {
-        font-size: 30px;
-        fill: aliceblue;
-        /* fill: black; */
-        font-weight: bold
-    }
+  .CircularProgressbar-text {
+      font-size: 30px;
+      fill: aliceblue;
+      font-weight: bold
+  }
 }
  
-/* In your styles.css or App.css */
-/* @keyframes scroll {
-    0% {
-      transform: translateX(100%);
-    }
-    100% {
-      transform: translateX(-100%);
-    }
+.card:hover{
+  img{
+    /* opacity: 0.3; */
   }
-  
-  .animate-scroll {
-    animation: scroll 10s linear infinite;
+  .hoverStyle{
+    visibility: visible;
   }
-   */
-   
+}
+
+#sliderImg{
+  height: 80vh;
+}
+
+/* @media screen and (min-height:483px){
+  #sliderImg{
+    height: 50vh;
+  }
+    
+} */

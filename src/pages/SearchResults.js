@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { dataSelector } from '../redux/reducers/dataReducer';
 import Card from "../cards/Card";
+import VideoPopup from '../components/VideoPopup';
 
 const SearchResults = () => {
   const searchResults = useSelector(dataSelector).searchResults;
@@ -17,6 +18,7 @@ const SearchResults = () => {
           :<h1> There are no results for your search query.</h1>
         }
       </div>
+      <VideoPopup />
     </div>
   )
 }

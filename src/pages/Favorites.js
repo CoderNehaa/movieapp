@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
+
 import Card from '../cards/Card';
-import { authentication, getFavorites } from "../redux/reducers/userReducer"
+import { authentication, getFavorites, userSelector } from "../redux/reducers/userReducer"
+import VideoPopup from '../components/VideoPopup';
 
 const Favorites = () => {
+  const user = useSelector(userSelector).user;
   const favorites = useSelector(state => state.userReducer.favorites);
   const dispatch = useDispatch();
 
@@ -19,7 +22,8 @@ const Favorites = () => {
       ?<div className='flex flex-wrap justify-evenly items-center'> 
         {favorites.map((obj, index) => <Card key={index} item={obj} mediaType={obj.title?"movies":"shows"} />)} 
       </div>
-      :null}        
+      :null}  
+      <VideoPopup />      
     </div>
   )
 }

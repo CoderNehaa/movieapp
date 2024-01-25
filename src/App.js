@@ -1,7 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
-
 import Home from "./pages/Home";
 import Movies from "./pages/Movies";
 import TvShows from "./pages/TvShows";
@@ -11,9 +10,12 @@ import Favorites from "./pages/Favorites";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage"
 import SearchResults from "./pages/SearchResults";
+import VideoPopup from  "./components/VideoPopup";
+
 import { useEffect } from "react";
-import { authentication, getFavorites } from "./redux/reducers/userReducer";
-import { useDispatch, useSelector } from "react-redux";
+import { authentication } from "./redux/reducers/userReducer";
+import { useDispatch } from "react-redux";
+import { SkeletonTheme } from "react-loading-skeleton";
 
 const urlroute = createBrowserRouter([
   { path: '/', element:<Navbar />, 
@@ -39,19 +41,21 @@ const urlroute = createBrowserRouter([
       }
     ]},
     { path:'/signin', element:<SignInPage /> },
-    { path:'/signup', element:<SignUpPage /> }
+    { path:'/signup', element:<SignUpPage /> },
+    { path:'/trailer', element:<VideoPopup />}
 ])
 
 function App() {
   const dispatch = useDispatch();
-  const user = useSelector(state => state.userReducer.user)
 
   useEffect(() => {
     dispatch(authentication());
   }, [])
 
   return (
-    <RouterProvider router={urlroute} />
+    <SkeletonTheme baseColor="#0e1f3b">
+      <RouterProvider router={urlroute} />
+    </SkeletonTheme>
   );
 }
 
