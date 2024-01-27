@@ -39,9 +39,9 @@ const MovieDetails = () => {
         {loading?
             <DetailsSkeleton/>
             :currentMovie?
-                <>
+                <div className='min-h-screen h-full relative top-16 pb-12 bg-slate-900'>
                 <div style={backgroundImageStyle} className='text-white'>
-                    <div className='relative top-16 py-8 md:px-4 lg:py-16 lg:px-20 xl:px-52 min-h-screen w-full
+                    <div className='py-4 md:py-12 md:px-4 lg:py-16 lg:px-20 xl:px-52 xl:min-h-screen h-full w-full
                         flex flex-col items-center md:flex-row md:items-start bg-slate-900 opacity-90'>
                     <img src={currentMovie.poster_path
                                                 ?`https://image.tmdb.org/t/p/original${currentMovie.poster_path}`
@@ -71,30 +71,31 @@ const MovieDetails = () => {
                                     <div className='h-16 w-16 bg-white text-black rounded-full flex justify-center items-center'> 
                                         <i className="fa-solid fa-play text-3xl"></i> 
                                     </div>
-                                    <span className='ml-5'> Watch Trailer </span>
+                                    <span className='ml-5 text-sm lg:text-lg'> Watch Trailer </span>
                                 </button>
                             </div>
             
 
-                            <div className='flex justify-evenly m-2 border-b-2 border-gray-500 p-2 text-base'>
+                            <div className='flex justify-evenly m-2 border-b-2 border-gray-500 p-2 text-sm lg:text-base'>
                                 <span> Budget : <span className='text-gray-400'> ${currentMovie.budget}</span> </span>
                                 <span> Revenue :<span className='text-gray-400'> ${currentMovie.revenue}</span> </span>
                                 <span> Duration :<span className='text-gray-400'>  {currentMovie.runtime} min </span> </span>
                             </div>
                             
-                            <div className='flex justify-evenly m-2 border-b-2 border-gray-500 p-2 text-base'>
+                            <div className='flex justify-evenly m-2 border-b-2 border-gray-500 p-2 text-sm lg:text-base'>
                                 <span> Status : <span className='text-gray-400'> {currentMovie.status}</span> </span>
                                 <span> Release Date : <span className='text-gray-400'> {currentMovie.release_date} </span></span>
                             </div>
-                            <p className='text-md my-5 tracking-wide text-justify font-light line'> {currentMovie.overview} </p>
+                            <p className='text-sm lg:text-md py-5 tracking-wide text-justify font-light line'> {currentMovie.overview} </p>
                         </div>
                     </div>
                 </div>
 
                 {/* Official videos of this movie */}
                 {currentMovie.videos.results.length
-                    ?<div className='h-full bg-slate-900 text-white py-12 lg:px-52'>
-                        <h1 className='text-xl lg:text-3xl tracking-wide my-4'> Official videos </h1>
+                    ?<div className='h-full text-white lg:py-12 xl:px-52'>
+                        <h1 className='text-xl md:text-2xl lg:text-3xl tracking-wide px-4 py-4'> Official videos </h1>
+                        <div className='px-4'>
                         {currentMovie.videos.results.length>4
                             ?<HorizontalScroll>
                                 {currentMovie.videos.results.map((video, index) => (
@@ -107,22 +108,24 @@ const MovieDetails = () => {
                                 ))}
                             </div>
                         }
+                        </div>
                     </div>
                     :null}
 
                     {/* Similar movies to recommend */}
                     {currentMovie.similar.results.length
-                        ?<div className='h-full bg-slate-900 text-white py-12 lg:px-52'>
-                            <h1 className='text-xl lg:text-3xl tracking-wide my-4'> Similar Movies </h1>
+                        ?<div className='h-full text-white lg:py-12 xl:px-52'>
+                            <h1 className='text-xl md:text-2xl lg:text-3xl tracking-wide my-4 px-4'> Similar Movies </h1>
+                            <div className='px-4'>
                             {currentMovie.similar.results.length>5
                                 ?<HorizontalScroll>
                                     {currentMovie.similar.results.map((obj, index) => (
                                     <Link to={`/movies/${obj.id}`} key={index}>
-                                        <div className='w-56 mr-4'>
+                                        <div className='w-28 md:w-40 lg:w-56 mr-4'>
                                             <img src={obj.poster_path
                                                 ?`https://image.tmdb.org/t/p/original${obj.poster_path}`
                                                 :`https://i.etsystatic.com/35096161/r/il/e50732/4588726794/il_fullxfull.4588726794_3qe7.jpg`} 
-                                                className='h-72 w-56'
+                                                className='h-36 w-28 md:h-48 md:w-40 lg:h-72 lg:w-56'
                                             />
                                         </div>
                                 </Link>
@@ -138,11 +141,12 @@ const MovieDetails = () => {
                                     ))}
                                 </div>
                             }
+                            </div>
                             <VideoPopup />
                         </div>
                         :null
                     }
-                </>
+                </div>
                 :null
             }
         </>

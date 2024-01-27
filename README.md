@@ -8,3 +8,4 @@
 <!-- Notification and error element -->
 
 <!-- hovering on buttons will represent button detail e.g. - add to favorites, details -->
+<!-- loading effect in favorites and searchresults -->

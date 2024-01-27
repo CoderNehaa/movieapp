@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -11,8 +11,8 @@ import { dataSelector, findTrailer } from '../redux/reducers/dataReducer';
 import { addToFavorites, getFavorites, userSelector } from '../redux/reducers/userReducer';
 
 const CarouselSlider = () => {
-    const {user} = useSelector(userSelector);
-    const {movies} = useSelector(dataSelector);
+    const { user } = useSelector(userSelector);
+    const { movies } = useSelector(dataSelector);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -25,17 +25,14 @@ const CarouselSlider = () => {
             <Carousel showArrows={true} autoPlay={true} showThumbs={false} showStatus={false} showIndicators={false}>
                 {movies && movies.map((obj, index) =>
                     <div key={index}> 
-                        <div className='absolute h-full lg:w-[800px] p-10 lg:p-28 text-white font-bold text-left
-                                        flex flex-col flex-wrap justify-center items-start bg-gradient-to-r from-black'> 
-                            <span className='text-3xl lg:text-5xl'> {obj.original_title} </span>
-                            
-                            <div>
-                                <p className='text-xl lg:text-2xl text-gray-300 line-clamp-4 my-8'> {obj.overview} </p>
-                            </div>
+                        <div className='absolute h-full w-full lg:w-[800px] py-6 px-8 md:px-12 lg:p-28 text-white font-bold text-left
+                                        flex flex-col items-start justify-evenly bg-gradient-to-r from-black'> 
+                            <span className='text-2xl md:text-3xl lg:text-5xl'> {obj.original_title} </span>
+                            <div> <p className='text-base md:text-xl lg:text-2xl text-gray-300 line-clamp-4 my-3 lg:my-8'> {obj.overview} </p> </div>
                             
                             <div className='flex flex-wrap items-center'>
                                 <RatingCircle value={obj.vote_average.toFixed(1)}/>
-
+                    
                                 <button className='h-12 w-12 lg:h-16 lg:w-16 mr-3 ml-5 flex justify-center items-center
                                     bg-zinc-600 rounded-full hover:bg-white hover:text-black' 
                                     onClick={() => user?dispatch(addToFavorites(obj)):navigate('signin')}> 

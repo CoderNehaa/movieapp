@@ -6,6 +6,7 @@ import { logOut } from '../redux/reducers/userReducer';
 
 const Navbar = () => {
   const [showSearchBar, setShowSearchBar] = useState(false);
+  const [showNavItems, setShowNavItems] = useState(false);
   const user = useSelector(state => state.userReducer.user);
   const { apiData } = useSelector(dataSelector);
   const { baseUrl, apiKey } = apiData;
@@ -18,35 +19,51 @@ const Navbar = () => {
     const query = inputRef.current.value;
     dispatch(fetchList({type:'search', url:`${baseUrl}search/multi?query=${query}&api_key=${apiKey}`}));
     navigate('/search/results');
+    inputRef.current.value = '';
   }
 
   return (
     <>
     <nav className='min-w-full py-5 px-2 lg:px-4 z-10 fixed bg-slate-900 text-white 
       flex flex-wrap justify-between items-center shadow-md border-b-2 border-slate-800'>
-        <div>
-          <Link to='/' className='text-xl font-bold hover:cursor-pointer'> Brand Name </Link>
-          <Link to='/shows' className='mx-5 lg:ml-10 hidden lg:inline hover:cursor-pointer'> TV Shows </Link>
-          <Link to='/movies' className='mx-5 hidden lg:inline hover:cursor-pointer'> Movies </Link>
-          <Link to='/favorites' className='mx-5 hidden lg:inline hover:cursor-pointer'> Favorites </Link>
+        <div className='flex items-center'>
+          <Link to='/' className='text-2xl font-bold hovEff' 
+            onClick={() => setShowNavItems(false)}> Brand Name </Link>
+          {/* Laptop view navbar items */}
+          <Link to='/shows' className='hovEff md:ml-10 hidden md:inline'> TV Shows </Link>
+          <Link to='/movies' className='hovEff md:ml-10 hidden md:inline'> Movies </Link>
+          <Link to='/favorites' className='hovEff md:ml-10 hidden md:inline'> Favorites </Link>
         </div>
 
         <div className='flex items-center fixed right-1 lg:right-4'>
-          <i className={`hover:cursor-pointer ${showSearchBar?"fas fa-xmark mx-3":"fa-solid fa-search mx-3"}`} 
+          <i className={`hovEff fa-solid ${showSearchBar?"fa-xmark":"fa-search"} mx-3`} 
             id='searchBtn' onClick={() => setShowSearchBar(!showSearchBar)}></i>
-            {user
-              ?<span onClick={() => dispatch(logOut())} className='mx-3'> Log Out <i className="fa-solid fa-arrow-right-from-bracket mx-1"></i> </span>
-              :<Link to='/signin' className='mx-3'> Sign In <i className="fa-solid fa-right-to-bracket ml-1" aria-hidden="true"></i></Link>
-            } 
+
+            <i className={`fa-solid ${showNavItems?"fa-xmark":"fa-bars"} mx-4 md:hidden`} 
+              onClick={() => setShowNavItems(!showNavItems)}> </i>
+            
+            <div className='hidden md:flex'>
+              {user
+                ?<span onClick={() => dispatch(logOut())} className='mx-3 hovEff'> Log Out <i className="fa-solid fa-arrow-right-from-bracket mx-1"></i> </span>
+                :<Link to='/signin' className='mx-3 hovEff'> Sign In <i className="fa-solid fa-right-to-bracket ml-1" aria-hidden="true"></i></Link>
+              } 
+            </div>
         </div>
     </nav>
+    
+    {/* Mobile view navbar items */}
+    <div className={showNavItems?"flex flex-col fixed w-full top-16 text-sm z-10 bg-slate-900 text-white md:hidden":"hidden"} id='navItems'>
+      <Link to='/' className='px-4 py-2' onClick={() => setShowNavItems(!showNavItems)}> Home </Link>
+      <Link to='/movies' className='px-4 py-2' onClick={() => setShowNavItems(!showNavItems)}> Movies </Link>
+      <Link to='/shows' className='px-4 py-2' onClick={() => setShowNavItems(!showNavItems)}> TV Shows </Link>
+      <Link to='/favorites' className='px-4 py-2' onClick={() => setShowNavItems(!showNavItems)}> Favorites </Link>
+      {user
+        ?<span onClick={() => {dispatch(logOut()); setShowNavItems(!showNavItems)}} className='px-4 py-2'> Log Out <i className="fa-solid fa-arrow-right-from-bracket mx-1"></i> </span>
+        :<Link to='/signin' className='px-4 py-2'> Sign In <i className="fa-solid fa-right-to-bracket mx-1" aria-hidden="true"></i></Link>
+      }
+    </div> 
 
-    <div className="fixed top-16 z-10 p-2 min-w-full flex items-center text-sm text-white bg-slate-800 lg:hidden">
-      <Link to='/shows' className='mx-2 hover:cursor-pointer'> TV Shows </Link>
-      <Link to='/movies' className='mx-2'> Movies </Link>
-      <Link to='/favorites' className='mx-2 hover:cursor-pointer'> Favorites </Link>
-    </div>
-
+    {/* Search bar form */}
     <div className={`z-10 w-full py-5 px-5 fixed top-20 bg-zinc-300 ${showSearchBar?'flex items-center':'hidden'}`} id='searchBar'> 
       <i className="fas fa-search mx-4"></i>
       <form onSubmit={handleSubmit}>

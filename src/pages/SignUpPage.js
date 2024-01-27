@@ -12,7 +12,6 @@ const SignUpPage = () => {
     useEffect(() => {
         if(user){
             navigate('/');
-            console.log(user);
         }
     }, [user]);
 
@@ -23,7 +22,7 @@ const SignUpPage = () => {
 
     return (
         <div className='h-screen w-screen bg-slate-900 text-cyan-700 flex justify-center items-center p-0 m-0'>
-            <div className='w-1/3 h-1/2 flex flex-col justify-center items-center'>
+            <div className='w-full lg:w-1/3 h-1/2 flex flex-col justify-center items-center'>
                 <h1 className='text-4xl mb-4'> Sign Up </h1>
 
                 <form onSubmit={handleSubmit} className='flex flex-col w-[350px]'>

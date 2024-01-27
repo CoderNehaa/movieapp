@@ -33,10 +33,10 @@ const ShowDetails = () => {
         {loading?
         <DetailsSkeleton/>
         :currentShow?
-            <>
-                <div style={backgroundImageStyle} className='text-white w-screen'>
-                    <div className='relative top-16 py-8 md:px-4 lg:py-16 lg:px-20 xl:px-52 opacity-95
-                        flex flex-col items-center md:flex-row md:items-start min-h-screen w-full
+        <div className='min-h-screen h-full relative top-16 bg-slate-900'>
+                <div style={backgroundImageStyle} className='text-white'>
+                    <div className='py-8 md:px-4 lg:py-16 lg:px-20 xl:px-52 opacity-95
+                        flex flex-col items-center md:flex-row md:items-start xl:min-h-screen w-full
                         bg-gradient-to-b from-slate-900 to-slate-950'>
 
                         <img src={`https://image.tmdb.org/t/p/original${currentShow?currentShow.poster_path:""}`} 
@@ -59,7 +59,7 @@ const ShowDetails = () => {
                                     <div className='h-16 w-16 bg-white text-black rounded-full flex justify-center items-center'> 
                                         <i className="fa-solid fa-play text-3xl"></i> 
                                     </div>
-                                    <span className='ml-5'> Watch Trailer </span>
+                                    <span className='ml-5 text-sm lg:text-xl'> Watch Trailer </span>
                                 </button>
                             </div>
                             
@@ -87,13 +87,13 @@ const ShowDetails = () => {
                         </div>
                     </div>
                 </div>
-                <div className='bg-slate-900 opacity-100 relative px-52 py-10 text-slate-300'>
-                    <span className='my-4 text-3xl'> All seasons </span>
+                <div className='lg:px-20 xl:px-52 py-10 text-slate-300'>
+                    <span className='my-4 text-xl lg:text-3xl px-4'> All seasons </span>
                     <div className='flex flex-wrap'>
                         {currentShow.seasons.map((season, index) => <SeasonCard key={index} series={currentShow.original_name} obj={season} />)}
                     </div>
                 </div>
-            </>
+            </div>
             :null
         }
         </>

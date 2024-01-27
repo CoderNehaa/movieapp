@@ -28,7 +28,7 @@ const Home = () => {
   return (
     <div className='relative top-16 py-1 bg-slate-900 h-full min-h-screen text-white'>
       <CarouselSlider />
-      {favorites.length? <CardContainer arr={favorites} heading='Your Favorites' page="favorites" />:null}
+      {favorites && <CardContainer arr={favorites} heading='Your Favorites' page="favorites" />}
       <CardContainer mediaType='shows' arr={tvShows} heading='TV shows' page="shows" />
       <CardContainer mediaType='movies' arr={movies} heading='Movies' page="movies" />
       <Footer />
