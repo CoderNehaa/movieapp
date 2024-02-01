@@ -1,0 +1,18 @@
+
+@media only screen and (max-width: 600px) {
+  .rotate-container {
+    transform: rotate(90deg);
+    transform-origin: left top;
+    width: 100vh;
+    height: 100vw;
+    overflow-x: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+
+  .rotate-container .react-player {
+    transform: rotate(-90deg);
+    transform-origin: center center;
+  }
+}

@@ -18,7 +18,7 @@ const SeasonCard = ({series, obj}) => {
         </div>
         <span className='my-1'> {date.getFullYear()} - {obj.episode_count} Episodes </span>
         <span> {`Season ${obj.season_number} of ${series} released on ${`${date.getDate()} ${date.toLocaleString('default', {month:'long'})}, ${date.getFullYear()}`}.`} </span>
-        <p className='line-clamp-4 md:block'> {obj.overview} </p>
+        <p className='line-clamp-4 hidden md:block'> {obj.overview} </p>
       </div>
     </div>
   )

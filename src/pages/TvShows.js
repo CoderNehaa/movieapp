@@ -3,37 +3,39 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Card from '../cards/Card';
 import CardSkeleton from "../loading-skeleton/CardSkeleton";
-import { dataSelector, fetchList, setTVgenre } from '../redux/reducers/dataReducer';
-import VideoPopup from '../components/VideoPopup';
+import { dataSelector, emptyShows, fetchGenres, fetchList, setTVgenre } from '../redux/reducers/dataReducer';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { getFavorites, userSelector } from '../redux/reducers/userReducer';
+import LoaderSpinner from '../loading-skeleton/LoaderSpinner';
 
 const TvShows = () => {
-  const { tvShows, genres, apiData, tvGenre, loading } = useSelector(dataSelector);
+  const { tvShows, tvGenresList, apiData, tvGenre, loading } = useSelector(dataSelector);
   const { baseUrl, apiKey } = apiData;
   const [ showGenreBtn, setShowGenreBtn ] =  useState(false);
   const [ page, setPage ] = useState(1);
   const dispatch = useDispatch();
   
   useEffect(() => { //run only when page mounted
-    window.addEventListener('scroll', handleScroll);
-    dispatch(fetchList({url:`${baseUrl}genre/tv/list?language=en&api_key=${apiKey}`, type:'genres'})); // Fetching genre
-    if(!tvShows.length){
-      dispatch(fetchList({url:`${baseUrl}tv/popular?api_key=${apiKey}`, type:'shows'}));
-    }
+    dispatch(getFavorites());
+    dispatch(fetchGenres('tv'));
   }, [])
 
   useEffect(() => {
     if(tvGenre){
       dispatch(fetchList({type:'shows', url:`${baseUrl}discover/tv?api_key=${apiKey}&with_genres=${tvGenre.id}&page=${page}`}));
-    } else if(!tvGenre && page > 1){
+    } else {
+      if(page === 1){
+        dispatch(emptyShows());
+      }
       dispatch(fetchList({url:`${baseUrl}tv/popular?api_key=${apiKey}&page=${page}`, type:'shows'}));
     }
     setShowGenreBtn(false);
   }, [tvGenre, page]);
 
-  function handleScroll(){
-    const {scrollTop, scrollHeight, clientHeight} = document.documentElement;
-    if(scrollTop + clientHeight >= scrollHeight - 10 && !loading){
-      setPage((prev) => prev+1);
+  function showAllShows(){
+    setPage(1);
+    if(tvGenre!==null){
+      dispatch(setTVgenre(null));
     }
   }
 
@@ -42,10 +44,8 @@ const TvShows = () => {
       bg-gradient-to-tr from-slate-950 via-slate-900 to-cyan-900'>
       <div className='flex flex-wrap justify-between items-center my-5'>
         <div className='flex items-center'>
-          <span className='text-gray-500 text-lg lg:text-xl mr-1 lg:mr-3 hover:cursor-pointer' 
-            onClick={() => {dispatch(setTVgenre(null)); setPage(1)}}> 
-            TV Shows <i className='fa-solid fa-angles-right'></i> 
-          </span>
+          <span className='text-gray-500 text-lg lg:text-xl mr-1 lg:mr-3 hover:cursor-pointer' onClick={showAllShows}> 
+            TV Shows <i className='fa-solid fa-angles-right'></i> </span>
           <span className='text-2xl lg:text-4xl font-bold ml-2'>{`${tvGenre?tvGenre.name:'All Shows'}`} </span>
         </div>
 
@@ -58,7 +58,7 @@ const TvShows = () => {
 
           {/* Render list of genres */}
           <div className={`${showGenreBtn?"block":"hidden"} bg-slate-800 px-2 absolute z-10 w-full`}>
-            {genres && genres.map((genre, index) => {
+            {tvGenresList && tvGenresList.map((genre, index) => {
               return(
                 <div className='flex justify-center hover:bg-sky-300 hover:cursor-pointer m-1 text-xs md:text-sm' key={index} 
                   onClick={() => dispatch(setTVgenre(genre))}> {genre.name} </div>
@@ -69,11 +69,12 @@ const TvShows = () => {
 
       </div>
 
-      <div className='flex flex-wrap justify-evenly lg:justify-between'>
-      {loading && <CardSkeleton count={page*20}/>}
-      { tvShows && tvShows.map((obj, index) => <Card item={obj} key={index} mediaType='shows'/>)}
-      </div>
-      <VideoPopup />
+      <InfiniteScroll dataLength={tvShows.length} next={() => setPage(page+1)} hasMore={!loading} loader={<LoaderSpinner />} style={{overflow:'hidden'}}>
+        <div className='flex flex-wrap justify-evenly lg:justify-between'>
+        {loading && <CardSkeleton count={page*20}/> }
+        { tvShows && tvShows.map((obj, index) => <Card item={obj} key={index} mediaType='shows'/>)}
+        </div>
+      </InfiniteScroll>
     </div>
   )
 }

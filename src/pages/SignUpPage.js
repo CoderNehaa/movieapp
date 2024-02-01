@@ -39,7 +39,6 @@ const SignUpPage = () => {
                         className='my-2 bg-transparent border-2 border-cyan-700 py-3 px-5 focus:outline-none'/>
 
                     <button className='my-4 bg-cyan-700 text-black p-3 font-bold'> Sign Up </button>
-                    <button className='my-4 bg-cyan-700 text-black p-3 font-bold'> Sign In With Google </button>
                 </form>
                 <Link to='/signin' className='text-gray-400 font-bold m-2 text-sm'> 
                     Already have an account? Sign in. 

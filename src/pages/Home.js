@@ -1,38 +1,37 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { dataSelector, fetchList } from '../redux/reducers/dataReducer';
+import { dataSelector, fetchGenres, setLoading } from '../redux/reducers/dataReducer';
 
 import CarouselSlider from '../carousel/CarouselSlider';
 import CardContainer from '../components/CardContainer';
-import { getFavorites } from '../redux/reducers/userReducer';
-import VideoPopup from "../components/VideoPopup";
 import Footer from '../components/Footer';
+import Skeleton from 'react-loading-skeleton';
 
 const Home = () => {
+  const { movieGenresList, tvGenresList, loading } = useSelector(dataSelector);
   const dispatch = useDispatch();
-  const {movies, tvShows, apiData} = useSelector(dataSelector);
-  const favorites = useSelector((state) => state.userReducer.favorites);
-  const {baseUrl, apiKey} = apiData;
 
   useEffect(() => {
-    dispatch(getFavorites());
-    if(!movies.length){
-      dispatch(fetchList({ url:`${baseUrl}movie/popular?api_key=${apiKey}&append_to_response=videos`, type:'movies'}));
-    }
-    if(!tvShows.length){
-      dispatch(fetchList({url:`${baseUrl}tv/popular?api_key=${apiKey}&append_to_response=videos`, type:'shows'}));
-    }
-  }, [])
+    dispatch(setLoading(true));
+    dispatch(fetchGenres('movie'));
+    dispatch(fetchGenres('tv'));
+    dispatch(setLoading(false));
+  }, []);
 
   // Trending, today, this week
   return (
-    <div className='relative top-16 py-1 bg-slate-900 h-full min-h-screen text-white'>
+    <div className='relative top-16 py-1 bg-slate-900 h-full text-white'>
       <CarouselSlider />
-      {favorites && <CardContainer arr={favorites} heading='Your Favorites' page="favorites" />}
-      <CardContainer mediaType='shows' arr={tvShows} heading='TV shows' page="shows" />
-      <CardContainer mediaType='movies' arr={movies} heading='Movies' page="movies" />
+      {loading
+      ?<div className='h-32 md:h-48 lg:h-72 w-full mt-4'> <Skeleton height={"100%"} width={"100%"} count={20} /></div>
+      :<>
+        {tvGenresList && tvGenresList.map((genre, index) => (
+          <CardContainer key={index} media='tv' genre={genre} />
+        ) )}
+        {movieGenresList && movieGenresList.map((genre, index) => <CardContainer key={index} media='movie' genre={genre} />)}
+      </>
+      }
       <Footer />
-      <VideoPopup />
     </div>
   )
 }

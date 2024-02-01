@@ -1,21 +1,31 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactPlayer from 'react-player';
 import { useDispatch, useSelector } from 'react-redux';
 import { setVideoURL } from '../redux/reducers/dataReducer';
+import { useNavigate } from 'react-router-dom';
+import './videoPopUp.css';
 
 const VideoPopup = () => {
   const dispatch = useDispatch();
   const videoURL = useSelector((state) => state.dataReducer.videoURL);
+  const navigate = useNavigate();
 
   return (
-    <div className={videoURL?`h-full w-full fixed left-0 top-0 flex flex-col justify-center items-center backdrop-blur-xl backdrop-brightness-50 z-20`:`hidden`}>
-      <div className='w-screen h-72 md:h-96 md:w-4/5 lg:h-2/5 xl:h-3/5 xl:w-3/5'>
-        <button className='text-white' onClick={() => dispatch(setVideoURL(null))}> Close</button>
-        <div className='bg-white h-full'>
-          <ReactPlayer url={`https://youtube.com/watch?v=${videoURL}`} playing={true} controls width="100%" height="100%"/>
+    <>
+      {videoURL
+      ?videoURL==='unavailable'
+        ?<div className='h-screen w-screen bg-black text-6xl text-zinc-500 flex justify-center items-center'> 
+          OOPS ! This trailer is not available. 
         </div>
-      </div>
-    </div>
+        :<div className='w-screen h-screen relative bg-black'>
+            <button className='text-white' onClick={() => {dispatch(setVideoURL(''))}}> Close </button>
+            <div className='relative h-full w-full flex flex-col justify-center items-center'>
+              <ReactPlayer url={`https://youtube.com/watch?v=${videoURL}`} playing={true} controls width="90%" height="90%"/>
+            </div>
+          </div>
+      :navigate(-1)
+      }      
+    </>
   )
 }
 

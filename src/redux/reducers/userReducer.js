@@ -1,7 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { db, auth } from '../../firebase/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
-import { arrayUnion, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import {setLoading} from "../reducers/dataReducer";
+import { toast } from "react-toastify";
 
 const initialState = {
     user:null,
@@ -11,6 +13,7 @@ const initialState = {
 export const signUp = createAsyncThunk(
     'user/signup',
     async (values, thunkAPI) => {
+        thunkAPI.dispatch(setLoading(true));
         return createUserWithEmailAndPassword(auth, values.email, values.password)
         .then(async (userCredential) => {
             updateProfile(auth.currentUser, {
@@ -29,9 +32,12 @@ export const signUp = createAsyncThunk(
                 password:values.password,
                 favorites:[]
             });
-            thunkAPI.dispatch(setUser(user));    
+            thunkAPI.dispatch(setUser(user));   
+            thunkAPI.dispatch(setLoading(false)); 
+            toast.success(`Welcome ${user.name} 🌟`)
         }).catch((err) => {
-            console.log(err.message);
+            toast.error(err.message);
+            thunkAPI.dispatch(setLoading(false));
         })
     }
 )
@@ -39,6 +45,7 @@ export const signUp = createAsyncThunk(
 export const signIn = createAsyncThunk(
     'user/signin',
     (values, thunkAPI) => {
+        thunkAPI.dispatch(setLoading(true));
         signInWithEmailAndPassword(auth, values.email, values.password)
         .then(userCredential => {
             const user = {
@@ -46,9 +53,12 @@ export const signIn = createAsyncThunk(
                 email:values.email,
                 favorites:[]
             }
-            thunkAPI.dispatch(setUser(user))
+            thunkAPI.dispatch(setUser(user));
+            thunkAPI.dispatch(setLoading(false));
+            toast.success(`Welcome ${user.name} 🌟`)
         }).catch(err => {
-            console.log(err);
+            toast.error(err.message);
+            thunkAPI.dispatch(setLoading(false));
         })
     }
 )
@@ -59,6 +69,7 @@ export const signInWithGoogle = createAsyncThunk(
         const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider)
         .then(async (result) => {
+            thunkAPI.dispatch(setLoading(true));
             const credential = GoogleAuthProvider.credentialFromResult(result);
             const token = credential.accessToken;
             const userCredential = result.user;
@@ -74,8 +85,11 @@ export const signInWithGoogle = createAsyncThunk(
             }
             const userRef = await setDoc(docRef, user);
             thunkAPI.dispatch(setUser(user));
+            thunkAPI.dispatch(setLoading(false));
+            toast.success(`Welcome ${user.name} 🌟`)
         }).catch(err => {
-            console.log(err);
+            toast.error(err.message);
+            thunkAPI.dispatch(setLoading(false));
         })
     }
 )
@@ -83,6 +97,7 @@ export const signInWithGoogle = createAsyncThunk(
 export const authentication = createAsyncThunk(
     'user/authentication',
     async (arg, thunkAPI) => {
+        thunkAPI.dispatch(setLoading(true));
        await onAuthStateChanged(auth,  (currentUser) => {
             if(currentUser){
                 const user = {
@@ -91,6 +106,7 @@ export const authentication = createAsyncThunk(
                     favorites:[]
                 }
                 thunkAPI.dispatch(setUser(user));
+                thunkAPI.dispatch(setLoading(false));
             }
         })
     }
@@ -103,14 +119,14 @@ export const logOut = createAsyncThunk(
         signOut(auth).then(() => {
             thunkAPI.dispatch(setUser(null))
         }).catch((err) => {
-            console.log(err);
+            toast.error(err.message);
         })
     }
 )
 
 export const getFavorites = createAsyncThunk(
     'user/getFavorites',
-    async (arg, thunkAPI) => {
+        async (arg, thunkAPI) => {
         const { userReducer } = thunkAPI.getState();
         const { user } = userReducer;
 
@@ -131,21 +147,30 @@ export const addToFavorites = createAsyncThunk(
         const isPresent = favorites.some((el) => el.id === obj.id);
 
         if(isPresent){
-            alert('This item is already added to favorites');
+            toast.info("This item is already added to favorites list.");
             return;
         }
         const docRef = doc(db, 'users', user.email);
         await updateDoc(docRef, {
             favorites:arrayUnion(obj)
         })
+        toast.success('Added to favorites.');
         thunkAPI.dispatch(getFavorites());
     }
 )
 
 export const removeFromFavorites = createAsyncThunk(
     'user/removeFavorite',
-    (arg, thunkAPI) => {
+    async (obj, thunkAPI) => {
+        const {userReducer} = thunkAPI.getState();
+        const {user, favorites} = userReducer;
 
+        const docRef = doc(db, 'users',user.email);
+        await updateDoc(docRef, {
+            favorites : arrayRemove(obj)
+        })
+        toast.success("Removed from favorites");
+        thunkAPI.dispatch(getFavorites());
     }
 )
 

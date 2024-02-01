@@ -28,12 +28,32 @@ body{
   cursor: pointer;
 }
 
-#sliderImg{
-  height: 80vh;
-}
 
-@media screen and (max-width:1280px) {
-  #sliderImg{
-    height: 40vh;
+/* min 350 px to 768 */
+@media screen and (min-width:350px) {
+  .sliderImg{
+    height: 35vh;
   }
 }
+
+/* 768 to 1024 */
+@media screen and (min-width:768px) {
+  .sliderImg{
+    height: 45vh;
+  }
+}
+
+/* 1024 to 1280 */
+@media screen and (min-width:1024px){
+  .sliderImg{
+    height: 60vh;
+  }
+}
+
+/* min 1280 px or larger */
+@media screen and (min-width:1280px) {
+  .sliderImg{
+    height: 70vh;
+  }
+}
+

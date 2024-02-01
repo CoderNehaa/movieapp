@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import React, { useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom';
 
 import SeasonCard from '../cards/SeasonCard';
 import RatingCircle from '../components/RatingCircle';
 import { useDispatch, useSelector } from 'react-redux';
 import { dataSelector, fetchCurrent, findTrailer} from "../redux/reducers/dataReducer";
-import { addToFavorites } from '../redux/reducers/userReducer';
+import { addToFavorites, removeFromFavorites ,userSelector } from '../redux/reducers/userReducer';
 import DetailsSkeleton from "../loading-skeleton/DetailsSkeleton";
+import { toast } from 'react-toastify';
 
 const ShowDetails = () => {
     const {id} = useParams();
-    const {currentShow, loading} = useSelector(dataSelector)
-    const [showNextEpisode, setShowNextEpisode ] = useState(false);
-    const {baseUrl, apiKey} = useSelector(dataSelector).apiData;
+    const {user, favorites} = useSelector(userSelector);
+    const {currentShow, loading, apiData} = useSelector(dataSelector);
+    const {baseUrl, apiKey} = apiData;
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     useEffect(() => {
         dispatch(fetchCurrent({ url:`${baseUrl}tv/${id}?api_key=${apiKey}&append_to_response=videos`, type:'show' }));
@@ -25,6 +27,12 @@ const ShowDetails = () => {
         backgroundRepeat: 'no-repeat'
     };
 
+    
+    const isFav = () => {
+        const ans = favorites && favorites.some((obj) => obj.id === currentShow.id);
+        return ans;
+    }
+
     const date = new Date(currentShow && currentShow.first_air_date);
     let rating = currentShow && (currentShow.vote_average).toFixed(1);
 
@@ -35,7 +43,7 @@ const ShowDetails = () => {
         :currentShow?
         <div className='min-h-screen h-full relative top-16 bg-slate-900'>
                 <div style={backgroundImageStyle} className='text-white'>
-                    <div className='py-8 md:px-4 lg:py-16 lg:px-20 xl:px-52 opacity-95
+                    <div className='py-8 md:px-4 lg:py-16 xl:py-28 lg:px-20 xl:px-52 opacity-95
                         flex flex-col items-center md:flex-row md:items-start xl:min-h-screen w-full
                         bg-gradient-to-b from-slate-900 to-slate-950'>
 
@@ -50,12 +58,18 @@ const ShowDetails = () => {
                             <span className='text-slate-400 italic text-xl my-4'> {currentShow.tagline} </span>
                             
                             <div className='flex justify-start items-center my-5'>
-                                <RatingCircle value={rating} />
+                                <div className='h-20 w-20'><RatingCircle value={rating} /></div>
+                                
                                 <button className='h-16 w-16 bg-white text-black rounded-full mx-5' 
-                                    onClick={() => dispatch(addToFavorites(currentShow))}> 
-                                    <i className='fa-solid fa-heart text-3xl'> </i>
+                                    onClick={() => {user?
+                                        isFav()?dispatch(removeFromFavorites(currentShow)):dispatch(addToFavorites(currentShow))
+                                                    :toast.warn('Sign in to add to your favorites list')}}> 
+                                    <i className={`fa-solid 
+                                        ${user?isFav()?'fa-heart-circle-minus':'fa-heart-circle-plus':'fa-heart'} text-3xl`}> </i>
                                 </button>
-                                <button onClick={() => dispatch(findTrailer({type:'tv', id:currentShow.id}))} className='flex items-center'>
+
+                                <button onClick={() => {dispatch(findTrailer({type:'tv', id:currentShow.id})); navigate('/watch')}} 
+                                    className='flex items-center'>
                                     <div className='h-16 w-16 bg-white text-black rounded-full flex justify-center items-center'> 
                                         <i className="fa-solid fa-play text-3xl"></i> 
                                     </div>
@@ -63,7 +77,7 @@ const ShowDetails = () => {
                                 </button>
                             </div>
                             
-                            {currentShow.created_by.length?<div className='flex flex-wrap'>
+                            {currentShow.created_by.length?<div className='flex flex-wrap lg:text-lg'>
                                 <span> Creator :  &nbsp;</span>
                                 {currentShow && currentShow.created_by.map((creator, index) => (
                                     <div key={index}>
@@ -72,25 +86,16 @@ const ShowDetails = () => {
                                 ))}
                             </div>:null}
 
-                            <p className='text-lg my-5 tracking-wide text-justify font-light line'> {currentShow.overview} </p> 
+                            <p className='text-lg lg:text-xl my-5 tracking-wide text-justify font-light line'> {currentShow.overview} </p> 
                             
-                            {currentShow.next_episode_to_air && currentShow.next_episode_to_air.overview !== ""
-                                ?<div className='flex items-start'>
-                                    <button className='bg-red-400 px-4 py-2 rounded-lg min-w-72' 
-                                        onClick={() => setShowNextEpisode(!showNextEpisode)}> {`In the next episode >>> `} </button>
-                                    <p className={showNextEpisode?'ml-4':'hidden'}> 
-                                        In the next episode, {currentShow.next_episode_to_air.overview} </p>  
-                                </div>
-                                :null
-                            }
-
                         </div>
                     </div>
                 </div>
                 <div className='lg:px-20 xl:px-52 py-10 text-slate-300'>
                     <span className='my-4 text-xl lg:text-3xl px-4'> All seasons </span>
                     <div className='flex flex-wrap'>
-                        {currentShow.seasons.map((season, index) => <SeasonCard key={index} series={currentShow.original_name} obj={season} />)}
+                        {currentShow.seasons.map((season, index) => 
+                            <SeasonCard key={index} series={currentShow.original_name} obj={season} />)}
                     </div>
                 </div>
             </div>

@@ -20,6 +20,7 @@ const Navbar = () => {
     dispatch(fetchList({type:'search', url:`${baseUrl}search/multi?query=${query}&api_key=${apiKey}`}));
     navigate('/search/results');
     inputRef.current.value = '';
+    setShowSearchBar(false);
   }
 
   return (
@@ -27,12 +28,11 @@ const Navbar = () => {
     <nav className='min-w-full py-5 px-2 lg:px-4 z-10 fixed bg-slate-900 text-white 
       flex flex-wrap justify-between items-center shadow-md border-b-2 border-slate-800'>
         <div className='flex items-center'>
-          <Link to='/' className='text-2xl font-bold hovEff' 
-            onClick={() => setShowNavItems(false)}> Brand Name </Link>
+          <Link to='/' className='text-xl lg:text-3xl font-bold hovEff italic'> NNTV </Link>
           {/* Laptop view navbar items */}
           <Link to='/shows' className='hovEff md:ml-10 hidden md:inline'> TV Shows </Link>
           <Link to='/movies' className='hovEff md:ml-10 hidden md:inline'> Movies </Link>
-          <Link to='/favorites' className='hovEff md:ml-10 hidden md:inline'> Favorites </Link>
+          {user?<Link to='/favorites' className='hovEff md:ml-10 hidden md:inline'> Favorites </Link>:null}
         </div>
 
         <div className='flex items-center fixed right-1 lg:right-4'>
@@ -56,7 +56,7 @@ const Navbar = () => {
       <Link to='/' className='px-4 py-2' onClick={() => setShowNavItems(!showNavItems)}> Home </Link>
       <Link to='/movies' className='px-4 py-2' onClick={() => setShowNavItems(!showNavItems)}> Movies </Link>
       <Link to='/shows' className='px-4 py-2' onClick={() => setShowNavItems(!showNavItems)}> TV Shows </Link>
-      <Link to='/favorites' className='px-4 py-2' onClick={() => setShowNavItems(!showNavItems)}> Favorites </Link>
+      {user?<Link to='/favorites' className='px-4 py-2' onClick={() => setShowNavItems(!showNavItems)}> Favorites </Link>:null}
       {user
         ?<span onClick={() => {dispatch(logOut()); setShowNavItems(!showNavItems)}} className='px-4 py-2'> Log Out <i className="fa-solid fa-arrow-right-from-bracket mx-1"></i> </span>
         :<Link to='/signin' className='px-4 py-2'> Sign In <i className="fa-solid fa-right-to-bracket mx-1" aria-hidden="true"></i></Link>
@@ -64,10 +64,10 @@ const Navbar = () => {
     </div> 
 
     {/* Search bar form */}
-    <div className={`z-10 w-full py-5 px-5 fixed top-20 bg-zinc-300 ${showSearchBar?'flex items-center':'hidden'}`} id='searchBar'> 
-      <i className="fas fa-search mx-4"></i>
-      <form onSubmit={handleSubmit}>
-        <input type='search' placeholder='Search here...' className='w-[1500px] bg-transparent focus:outline-none' ref={inputRef}/> 
+    <div className={`z-10 w-full py-5 px-5 lg:px-20 fixed top-20 bg-zinc-300 ${showSearchBar?'flex items-center':'hidden'}`}>
+      <form onSubmit={handleSubmit} className='flex relative w-full justify-between'>
+        <input type='search' placeholder='Search here...' className='bg-transparent focus:outline-none relative w-full text-xl' ref={inputRef}/>
+        <button type='submit'> <i className='fa-solid fa-search ml-4'></i> </button> 
       </form>
     </div> 
           

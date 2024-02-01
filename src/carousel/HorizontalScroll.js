@@ -1,7 +1,8 @@
-import React, { useRef, Children, cloneElement } from 'react';
+import React, { useRef, Children, cloneElement, useState } from 'react';
 
 const HorizontalScroll = ({ children }) => {
   const scrollContainerRef = useRef(null);
+  const [touchStartX, setTouchStartX] = useState(null);
 
   const scrollTo = (endX, duration) => {
     const container = scrollContainerRef.current;
@@ -22,6 +23,26 @@ const HorizontalScroll = ({ children }) => {
     requestAnimationFrame(animateScroll);
   };
 
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    if (touchStartX !== null) {
+      const touchEndX = e.touches[0].clientX;
+      const deltaX = touchEndX - touchStartX;
+
+      const container = scrollContainerRef.current;
+      container.scrollLeft -= deltaX;
+
+      setTouchStartX(touchEndX);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setTouchStartX(null);
+  };
+
   const handleScroll = (direction) => {
     const container = scrollContainerRef.current;
     const itemWidth = container?.firstChild?.clientWidth;
@@ -33,15 +54,23 @@ const HorizontalScroll = ({ children }) => {
   };
 
   return (
-    <div className='sticky'>
+    <div
+      className='sticky'
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <span
         className={`text-xl absolute bottom-1/2 left-4 text-gray-500 cursor-pointer hover:text-gray-100`}
         onClick={() => handleScroll('left')}
       >
-        <i className="fa-solid fa-circle-left"></i>
+        <i className="fa-solid fa-chevron-left z-10"></i>
       </span>
 
-      <div className='flex overflow-hidden' ref={scrollContainerRef}>
+      <div
+        className='flex overflow-hidden'
+        ref={scrollContainerRef}
+      >
         {Children.map(children, (child, index) =>
           cloneElement(child, { key: index })
         )}
@@ -51,7 +80,7 @@ const HorizontalScroll = ({ children }) => {
         className={`text-xl absolute bottom-1/2 right-4 text-gray-500 cursor-pointer hover:text-gray-100`}
         onClick={() => handleScroll('right')}
       >
-        <i className="fa-solid fa-circle-right"></i>
+        <i className="fa-solid fa-chevron-right z-10"></i>
       </span>
     </div>
   );

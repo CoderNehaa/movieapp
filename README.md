@@ -1,11 +1,17 @@
-<!-- Loading Skeleton -->
+<!-- div click goes to that page if clicked on favorite or trailer -->
+<!-- Smooth Loading -->
 
-<!-- Footer -->
-<!-- Logo type  brand name -->
+NNTV is video streaming website where you can explore all the movies and tv shows.
 
-<!-- In Home page, clicking on more button will take you to shows or movies page and on that page, that category will already be selected (in filter genre) and name of that genre will be written on page.  -->
+Features - 
+Create your account and save your favorite movie or show in your favorites list.
+Scroll Infinite in movies or shows page.
+Search movies or shows and check details, watch trailer, or add to favorites to watch later.
+Filter based on genre.
+Responsive web design
 
-<!-- Notification and error element -->
 
-<!-- hovering on buttons will represent button detail e.g. - add to favorites, details -->
-<!-- loading effect in favorites and searchresults -->
+This project is created ussing-
+HTML · CSS · JavaScript · React.js · Redux.js · Tailwind CSS · Firebase Authentication · Cloud Firestore · react-router-dom · react-infinite-scroll-component · react-loading-skeleton · react-responsive-carousel · react-player · react-toastify · react-circular-progressbar · react-loader-spinner
+
+[NNTV](https://nntv.netlify.app/)

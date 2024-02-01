@@ -1,4 +1,10 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { SkeletonTheme } from "react-loading-skeleton";
+
+import { Bounce, ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -11,14 +17,13 @@ import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage"
 import SearchResults from "./pages/SearchResults";
 import VideoPopup from  "./components/VideoPopup";
-
-import { useEffect } from "react";
 import { authentication } from "./redux/reducers/userReducer";
-import { useDispatch } from "react-redux";
-import { SkeletonTheme } from "react-loading-skeleton";
+import ErrorPage from "./components/ErrorPage";
 
 const urlroute = createBrowserRouter([
-  { path: '/', element:<Navbar />, 
+  { path: '/', 
+    element:<Navbar />, 
+    errorElement:<ErrorPage/>,
     children:[
       { index:true, element: <Home />},
       { path:'/movies', 
@@ -42,7 +47,7 @@ const urlroute = createBrowserRouter([
     ]},
     { path:'/signin', element:<SignInPage /> },
     { path:'/signup', element:<SignUpPage /> },
-    { path:'/trailer', element:<VideoPopup />}
+    { path:'/watch', element:<VideoPopup />}
 ])
 
 function App() {
@@ -55,6 +60,7 @@ function App() {
   return (
     <SkeletonTheme baseColor="#0e1f3b">
       <RouterProvider router={urlroute} />
+      <ToastContainer theme="dark" autoClose={2000} />
     </SkeletonTheme>
   );
 }

@@ -3,12 +3,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
 import {findTrailer} from "../redux/reducers/dataReducer";
-import { addToFavorites, userSelector } from '../redux/reducers/userReducer';
+import { addToFavorites, removeFromFavorites, userSelector } from '../redux/reducers/userReducer';
+import { toast } from 'react-toastify';
 
 const Card = ({item, mediaType}) => {
-  const user = useSelector(userSelector).user;
+  const { user, favorites } = useSelector(userSelector);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  
+  const isFav = () => {
+    const ans = favorites && favorites.some((obj) => obj.id === item.id);
+    return ans;
+  }
 
   if(!item.poster_path){
     return;
@@ -16,7 +22,7 @@ const Card = ({item, mediaType}) => {
   const rating = item.vote_average && (item.vote_average).toFixed(1);
   
   return (
-    <div className='flex flex-col justify-start w-32 md:w-48 lg:w-60 my-5 relative 
+    <div className='flex flex-col justify-start w-32 md:w-48 lg:w-60 m-5 relative 
       hover:scale-110 hover:transition-all hover:cursor-pointer card'>
       <div className='w-32 h-40 md:w-48 md:h-56 lg:w-60 lg:h-72 xl:h-80 sticky'>
         <img src={`https://image.tmdb.org/t/p/original${item?item.poster_path:""}`} className='rounded-2xl w-full h-full' />
@@ -27,11 +33,13 @@ const Card = ({item, mediaType}) => {
         <div className='flex items-center'>
           <Link to={`/${mediaType}/${item.id}`} ><i className='fa-solid fa-info-circle text-2xl lg:text-5xl mr-2'> </i></Link>
           <i className='fa-solid fa-circle-play text-2xl lg:text-5xl mr-2' 
-            onClick={ () => dispatch(findTrailer({id:item.id, type:mediaType==="movies"?"movie":"tv"}))}> </i>          
-          
-          <button onClick={() => {user?dispatch(addToFavorites(item)):navigate('/signin')}} 
-            className='h-6 w-6 lg:h-12 lg:w-12 lg:text-xl bg-white text-black rounded-full'> 
-            <i className='fa-solid fa-heart hover:cursor-pointer'> </i>
+            onClick={ () => {dispatch(findTrailer({id:item.id, type:mediaType==="movies"?"movie":"tv"})); navigate('/watch')}}> </i>          
+                              
+          <button onClick={() => {user?
+                                    isFav()?dispatch(removeFromFavorites(item)):dispatch(addToFavorites(item))
+                                    :toast.warn('Signin to add to your favorites list.')}} 
+            className='h-6 w-6 lg:h-12 lg:w-12 lg:text-2xl bg-white text-black rounded-full'> 
+            <i className={`fa-solid ${user?isFav()?'fa-heart-circle-minus':'fa-heart-circle-plus':'fa-heart'} hover:cursor-pointer`}> </i>
           </button>
         </div>
       </div>

@@ -1,21 +1,23 @@
 import React, { useEffect } from 'react'
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import RatingCircle from '../components/RatingCircle';
-import VideoPopup from '../components/VideoPopup';
 import VideoCard from '../cards/VideoCard';
 import HorizontalScroll from '../carousel/HorizontalScroll';
 
 import { dataSelector, fetchCurrent, findTrailer } from '../redux/reducers/dataReducer';
-import { addToFavorites } from '../redux/reducers/userReducer';
+import { addToFavorites, removeFromFavorites, userSelector } from '../redux/reducers/userReducer';
 import DetailsSkeleton from '../loading-skeleton/DetailsSkeleton';
+import { toast } from 'react-toastify';
 
 const MovieDetails = () => {
     const id = useParams();
     const dispatch = useDispatch();
+    const {user, favorites} = useSelector(userSelector);
     const {apiData, currentMovie, loading} = useSelector(dataSelector);
     const {baseUrl, apiKey} = apiData;
+    const navigate = useNavigate();
 
     useEffect(() => {
         const obj = {
@@ -34,6 +36,11 @@ const MovieDetails = () => {
         backgroundRepeat: 'no-repeat'
     };
     
+    const isFav = () => {
+        const ans = favorites && favorites.some((obj) => obj.id === currentMovie.id);
+        return ans;
+    }
+
     return (
         <>
         {loading?
@@ -41,7 +48,7 @@ const MovieDetails = () => {
             :currentMovie?
                 <div className='min-h-screen h-full relative top-16 pb-12 bg-slate-900'>
                 <div style={backgroundImageStyle} className='text-white'>
-                    <div className='py-4 md:py-12 md:px-4 lg:py-16 lg:px-20 xl:px-52 xl:min-h-screen h-full w-full
+                    <div className='py-4 md:py-12 md:px-4 lg:py-16 xl:py-28 lg:px-20 xl:px-52 xl:min-h-screen h-full w-full
                         flex flex-col items-center md:flex-row md:items-start bg-slate-900 opacity-90'>
                     <img src={currentMovie.poster_path
                                                 ?`https://image.tmdb.org/t/p/original${currentMovie.poster_path}`
@@ -60,13 +67,18 @@ const MovieDetails = () => {
                             <span className='text-slate-400 italic text-xl my-4'> {currentMovie.tagline} </span>
             
                             <div className='flex justify-start items-center my-5'>
-                                <RatingCircle value={rating} />
+                                
+                                <div className='h-20 w-20'><RatingCircle value={rating} /></div>
+
                                 <button className='h-16 w-16 bg-white text-black rounded-full mx-5' 
-                                    onClick={() => dispatch(addToFavorites(currentMovie))}> 
-                                    <i className='fa-solid fa-heart text-3xl'> </i>
+                                    onClick={() => {user?
+                                        isFav()?dispatch(removeFromFavorites(currentMovie)):dispatch(addToFavorites(currentMovie))
+                                                    :toast.warn('Sign in to add to your favorites list')}}> 
+                                    <i className={`fa-solid 
+                                        ${user?isFav()?'fa-heart-circle-minus':'fa-heart-circle-plus':'fa-heart'} text-3xl`}> </i>
                                 </button>
 
-                                <button onClick={() => dispatch(findTrailer({id:currentMovie.id, type:'movie'}))} 
+                                <button onClick={() => {dispatch(findTrailer({id:currentMovie.id, type:'movie'})); navigate('/watch')}} 
                                     className='flex items-center'>
                                     <div className='h-16 w-16 bg-white text-black rounded-full flex justify-center items-center'> 
                                         <i className="fa-solid fa-play text-3xl"></i> 
@@ -76,17 +88,19 @@ const MovieDetails = () => {
                             </div>
             
 
-                            <div className='flex justify-evenly m-2 border-b-2 border-gray-500 p-2 text-sm lg:text-base'>
+                            <div className='flex justify-evenly m-2 border-b-2 border-gray-500 p-2 text-sm lg:text-lg'>
                                 <span> Budget : <span className='text-gray-400'> ${currentMovie.budget}</span> </span>
                                 <span> Revenue :<span className='text-gray-400'> ${currentMovie.revenue}</span> </span>
                                 <span> Duration :<span className='text-gray-400'>  {currentMovie.runtime} min </span> </span>
                             </div>
                             
-                            <div className='flex justify-evenly m-2 border-b-2 border-gray-500 p-2 text-sm lg:text-base'>
+                            <div className='flex justify-evenly m-2 border-b-2 border-gray-500 p-2 text-sm lg:text-lg'>
                                 <span> Status : <span className='text-gray-400'> {currentMovie.status}</span> </span>
                                 <span> Release Date : <span className='text-gray-400'> {currentMovie.release_date} </span></span>
                             </div>
-                            <p className='text-sm lg:text-md py-5 tracking-wide text-justify font-light line'> {currentMovie.overview} </p>
+                            <p className='text-sm lg:text-xl py-5 tracking-wide text-justify font-light line'> 
+                                {currentMovie.overview} 
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -142,7 +156,6 @@ const MovieDetails = () => {
                                 </div>
                             }
                             </div>
-                            <VideoPopup />
                         </div>
                         :null
                     }
